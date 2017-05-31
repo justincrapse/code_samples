@@ -1,4 +1,6 @@
 ###################################################################################################
+# Codefights Arcade
+###################################################################################################
 """
 Takes in a year and returns the centry of that year
 input: 1988
@@ -383,45 +385,420 @@ def digitDegree(n):
         digit_degree += 1
     return digit_degree
 ###################################################################################################
+"""
+A string is said to be beautiful if b occurs in it no more times than a; c occurs in it no more times than b; etc.
+Given a string, check whether it is beautiful.
+input: "abcdefghijklmnopqrstuvwxyzqwertuiopasdfghjklxcvbnm"
+output: True
+"""
+def isBeautifulString(s):
+    return all([s.count(chr(i))>=s.count(chr(i+1)) for i in range(ord('a'), ord('z'))])
+###################################################################################################
+"""
+Given a string, find the shortest possible string which can be achieved by adding characters to the end of
+initial string to make it a palindrome.
+input: "abcdc"
+output: "abcdcba"
+"""
+def buildPalindrome(s):
+    pal_gen = (i for i in s)
+    length = len(s)
+    while s != ''.join(reversed(s)):
+        s = list(s)
+        s.insert(length, next(pal_gen))
+        s = ''.join(s)
+    return s
+###################################################################################################
+"""
+Given an array of the numbers of votes given to each of the candidates so far, and an integer k equal to the
+number of voters who haven't cast their vote yet, find the number of candidates who still have a chance to win
+the election. The winner of the election must secure strictly more votes than any other candidate. If two or more
+candidates receive the same (maximum) number of votes, assume there is no winner at all.
+input: votes: [2, 3, 5, 2] k: 3
+output: 2
+"""
+def electionsWinners(votes, k):
+    m = max(votes)
+    if k == 0 and votes.count(m) == 1:
+        return 1
+    return len([i for i in votes if i + k > m])
+###################################################################################################
+"""
+Your task is to check by given string inputString whether it corresponds to MAC-48 address or not.
+input: "02-03-04-05-06-07-"
+output: False
+"""
+def isMAC48Address(inputString):
+    return bool(re.match(r'^([\dA-F]{2}-){5}[\dA-F]{2}$', inputString))
+###################################################################################################
+"""
+First, the string is divided into the least possible number of disjoint substrings consisting of identical characters
+for example, "aabbbc" is divided into ["aa", "bbb", "c"]. Next, each substring with length greater than one is
+replaced with a concatenation of its length and the repeating character. For example, substring "bbb" is replaced by "3b"
+Finally, all the new strings are concatenated together in the same order and a new string is returned.
+input:"aabbbc"
+output: "2a3bc"
+"""
+from itertools import groupby
 
+def lineEncoding(s):
+    groups =  [list(y) for x, y in groupby(s)]
+    number_gram = []
+    for g in groups:
+        if len(g) > 1:
+            number_gram.append(str(len(g)))
+            number_gram.append(g[0])
+        else:
+            number_gram.append(g[0])
+    return ''.join(number_gram)
+###################################################################################################
+"""
+Given some integer, find the maximal number you can obtain by deleting exactly one digit of the given number.
+input: 152
+output: 52
+"""
+def deleteDigit(n):
+    n_list = list(str(n))
+
+    for i in range(len(n_list) -1):
+        if n_list[i] < n_list[i+1]:
+            del n_list[i]
+            return int(''.join(n_list))
+    del n_list[-1]
+    return int(''.join(n_list))
+###################################################################################################
+"""
+Define a word as a sequence of consecutive English letters. Find the longest word from the given string.
+input: "Ready[[[, steady, go!"
+output: "steady"
+"""
+def longestWord(text):
+    return max(re.findall(r'[\w]+', text), key=len)
+###################################################################################################
+"""
+Check if the given string is a correct time representation of the 24-hour clock.
+input: "25:51"
+output: False
+"""
+def validTime(time):
+    return bool(re.match(r'[0-1]\d:[0-5]\d|[2][0-3]:[0-5]\d', time))
+###################################################################################################
+"""
+Given a rectangular matrix containing only digits, calculate the number of different 2 × 2 squares in it.
+input:
+[[2,5,3,4,3,1,3,2], 
+ [4,5,4,1,2,4,1,3], 
+ [1,1,2,1,4,1,1,5], 
+ [1,3,4,2,3,4,2,4], 
+ [1,5,5,2,1,3,1,1], 
+ [1,2,3,3,5,1,2,4], 
+ [3,1,4,4,4,1,5,5], 
+ [5,1,3,3,1,5,3,5], 
+ [5,4,4,3,5,4,4,4]]
+output: 54
+"""
+def differentSquares(matrix):
+    sub_set = []
+    for i in range(len(matrix)-1):
+        for i2 in range(len(matrix[i])-1):
+            next_set = [matrix[i][i2:i2+2], matrix[i+1][i2:i2+2]]
+            if next_set not in sub_set: sub_set.append(next_set)
+    return len(sub_set)
+###################################################################################################
+"""
+You are given an array of desired filenames in the order of their creation. Since two files cannot have equal names,
+the one which comes later will have an addition to its name in a form of (k), where k is the smallest positive integer
+such that the obtained name is not used yet. Return an array of names that will be given to the files.
+input: ["dd", "dd(1)", "dd(2)", "dd", "dd(1)", "dd(1)(2)", "dd(1)(1)", "dd", "dd(1)"]
+output: ["dd", "dd(1)", "dd(2)", "dd(3)", "dd(1)(1)", "dd(1)(2)", "dd(1)(1)(1)", "dd(4)", "dd(1)(3)"]
+"""
+def fileNaming(names):
+
+    for i, name in enumerate(names):
+        new_index = 1
+        new_name = '{}({})'.format(name, new_index)
+        if name not in names[:i]:
+            continue
+        else:
+            while new_name in names[:i]:
+                new_index += 1
+                new_name = '{}({})'.format(name, new_index)
+            names[i] = new_name
+    return names
+###################################################################################################
+"""
+You are taking part in an Escape Room challenge designed specifically for programmers. In your efforts to find a clue,
+you've found a binary code written on the wall behind a vase, and realized that it must be an encrypted message. After
+some thought, your first guess is that each consecutive 8 bits of the code stand for the character with the corresponding
+extended ASCII code. Assuming that your hunch is correct, decode the message.
+input: "010010000110010101101100011011000110111100100001"
+output: "Hello!"
+"""
+def messageFromBinaryCode(code):
+    n = int(code, 2)
+    return n.to_bytes((n.bit_length() + 7) // 8, 'big').decode()
+###################################################################################################
+"""
+Construct a square matrix with a size N × N containing integers from 1 to N * N in a spiral order, starting 
+from top-left and in clockwise direction.
+input: 5
+output:
+[[1,2,3,4,5], 
+ [16,17,18,19,6], 
+ [15,24,25,20,7], 
+ [14,23,22,21,8], 
+ [13,12,11,10,9]]
+* this one was pretty difficult for me and I bet I could come up with a more elegant solution
+"""
+def spiralNumbers(n):
+    steps = 1
+    round = 0
+    matrix = [[0 for e in range(n)] for i in range(n)]
+
+    while steps <= n * n:
+        print(steps)
+        first_range = n - round if round == 0 else (n - round * 2)
+
+        for i in range(first_range):
+            matrix[round][round + i] = steps
+            steps += 1
+
+        for i in range(round + 1, n - round):
+            matrix[i][(n - round) - 1] = steps
+            steps += 1
+
+        for i in reversed(range((first_range) - 1)):
+            matrix[(n - round) - 1][round + i] = steps
+            steps += 1
+        for i in reversed(range(round + 1, (n - round) - 1)):
+            matrix[i][round] = steps
+            steps += 1
+
+        round += 1
+    return matrix
+###################################################################################################
+"""
+Sudoku checker
+input: 
+[[1,2,3,4,5,6,7,8,9], 
+ [4,6,5,8,7,9,3,2,1], 
+ [7,9,8,2,1,3,6,5,4], 
+ [1,2,3,4,5,6,7,8,9], 
+ [4,6,5,8,7,9,3,2,1], 
+ [7,9,8,2,1,3,6,5,4], 
+ [1,2,3,4,5,6,7,8,9], 
+ [4,6,5,8,7,9,3,2,1], 
+ [7,9,8,2,1,3,6,5,4]]
+output: False
+"""
+def sudoku(grid):
+    check_list = [i for i in range(1, 10)]
+
+    if sum([sorted(list) == check_list for list in grid]) != 9:
+        return False
+    
+    if sum(([sorted(list) == check_list for list in list(zip(*grid))])) != 9:
+        return False
+
+    for section in range(0, 9, 3):
+        for square in range(0, 9, 3):
+            sub_grid = [[grid[section + e][square + i] for i in range(3)] for e in range(3)]
+            if sorted([i for row in sub_grid for i in row]) != check_list:
+                return False
+    return True
+###################################################################################################
+# INTERVIEW PRACTICE SECTION
+###################################################################################################
+"""
+Note: Write a solution with O(n2) time complexity, since this is what you would be asked to do during a real 
+interview. You have an array a composed of exactly n elements. Given a number x, determine whether or not a 
+contains three elements for which the sum is exactly x.
+input: x: 986 
+a: [557, 217, 627, 358, 527, 358, 338, 272, 870, 362, 897, 23, 618, 113, 718, 697, 586, 42, 424, 130, 230, 566, 560, 933]
+output:True
+"""
+import itertools
+
+def tripletSum(x, a):
+    below_x = [i for i in a if i < x]
+    for pair in itertools.combinations(below_x, 3):
+        if sum(pair) == x:
+            return True
+    return False
+###################################################################################################
+"""
+Given an array of words and a length l, format the text such that each line has exactly l characters and is
+fully justified on both the left and the right. Words should be packed in a greedy approach; that is, pack 
+as many words as possible in each line. Add extra spaces when necessary so that each line has exactly l characters.
+Extra spaces between words should be distributed as evenly as possible. If the number of spaces on a line does not 
+divide evenly between words, the empty slots on the left will be assigned more spaces than the slots on the right. 
+For the last line of text and lines with one word only, the words should be left justified with no extra space 
+inserted between them.
+input: ["This", "is", "an", "example", "of", "text", "justification."]
+ouput:
+["This    is    an",
+ "example  of text",
+ "justification.  "]
+ """
+import textwrap
+def textJustification(words, L):
+    words = [word if len(word) > 0 else '~' for word in words]
+    lines = textwrap.wrap(' '.join(words), L)
+    lines[-1] = lines[-1].ljust(L, ' ')
+    for l in range(len(lines)):
+        if '~' in lines[l]:
+            lines[l] = '{}'.format(' ' * L)
+            continue
+        line_length = len(lines[l])
+        gaps = [gap.regs[0][0] for gap in re.finditer('\s', lines[l])]
+        if not gaps:
+            lines[l] = lines[l].ljust(L, ' ')
+        else:
+            while line_length < L:
+                for i in range(len(gaps)):
+                    if line_length == L:
+                        break
+                    gap_index = gaps[i]
+                    line_list = [k for k in lines[l]]
+                    line_list.insert(gap_index, ' ')
+                    lines[l] = ''.join(line_list)
+                    line_length += 1
+                    for k in range(i, len(gaps)):
+                        gaps[k] += 1
+    return lines
+###################################################################################################
+"""
+Valid Sudoku Puzzle (Unsolved: '.' equals empty spaces)
+input:
+[['.', '.', '.', '.', '2', '.', '.', '9', '.'],
+ ['.', '.', '.', '.', '6', '.', '.', '.', '.'],
+ ['7', '1', '.', '.', '7', '5', '.', '.', '.'],
+ ['.', '7', '.', '.', '.', '.', '.', '.', '.'],
+ ['.', '.', '.', '.', '8', '3', '.', '.', '.'],
+ ['.', '.', '8', '.', '.', '7', '.', '6', '.'],
+ ['.', '.', '.', '.', '.', '2', '.', '.', '.'],
+ ['.', '1', '.', '2', '.', '.', '.', '.', '.'],
+ ['.', '2', '.', '.', '3', '.', '.', '.', '.']]
+output: False
+"""
+def sudoku2(grid):
+    for row in grid:
+        values = [i for i in row if i != '.']
+        if len(values) != len(set(values)):
+            return False
+
+    columns = [i for i in zip(*grid)]
+    for column in columns:
+        values = [i for i in column if i != '.']
+        if len(values) != len(set(values)):
+            return False
+
+    for row in range(0,9,3):
+        for col in range(0,9,3):
+            square = grid[row][col:col + 3] + grid[row + 1][col:col + 3] + grid[row + 2][col:col + 3]
+            values = [i for i in square if i != '.']
+            if len(values) != len(set(values)):
+                print('lsfkj')
+                return False
+    return True
+###################################################################################################
+"""
+The string s contains dashes that split it into groups of characters. You are given an integer k that represents
+the number of characters in groups that your output should have. Your goal is to return a new string that breaks
+s into groups with a length of k by placing dashes at the correct intervals. If necessary, the first group of 
+characters can be shorter than k. It is guaranteed that there are no consecutive dashes in s.
+input: "?CC?-[yiq2bg-Ie9?z!e-2X1i*k4-8ZMjllM-VEX2v%*"
+output: "?CC?-[yiq2bg-Ie9?z!e-2X1i*k4-8ZMjllM-VEX2v%*"
+"""
+def stringReformatting(s, k):
+    rstr = list(re.sub('-', '', s)[::-1])
+    shift = 0
+    for i in range(k, len(rstr), k):
+        rstr.insert(i + shift, '-')
+        shift += 1
+    return ''.join(rstr[::-1])
+###################################################################################################
+"""
+Sort the letters in the string s by the order they occur in the string t.
+input: "weather"
+ouput: "therapyw"
+"""
+def sortByString(s, t):
+    s_list = list(s)
+    final_word = []
+    for i in t:
+        if i in s_list:
+            i_count = s_list.count(i)
+            for j in range(i_count):
+                final_word.append(i)
+    return ''.join(final_word)
+###################################################################################################
+"""
+Given an absolute file path (Unix-style), shorten it to the format /<dir1>/<dir2>/<dir3>/....
+* I need to come back to this one as I have learned a lot about regex since solving this problem
+input: "/mpJN/..///../../ubYgf/tFM/"
+output: "/ubYgf/tFM"
+"""
+def simplifyPath(path):
+    s = path
+    s = re.sub(r'\/\.\/', '/', s)
+    s = re.sub(r'\/\.\/', '/', s)
+    print(s)
+    s = re.sub(r'\/{2,}', '/', s)
+    back_count = len(re.findall(r'\/\.\.', s))
+    for i in range(back_count):
+        s = re.sub(r'[\w\.]+\/\.\.', '', s, count=1)
+        s = re.sub(r'\/{2}', '/', s)
+    s = re.sub(r'\.\.', '', s)
+    s = re.sub(r'\/{2}', '/', s)
+    s = re.sub(r'\/$', '', s) if len(s) != 1 else s
+    return s
+###################################################################################################
+"""
+You are given an n x n 2D matrix that represents an image. Rotate the image by 90 degrees (clockwise).
+Try to solve this in-place - in a real interview, you will only be allowed to use O(1) additional memory.
+* simply problem, but I liked it, so I'm including it
+input: 
+[[10,9,6,3,7], 
+ [6,10,2,9,7], 
+ [7,6,3,8,2], 
+ [8,9,7,9,9], 
+ [6,8,6,8,2]]
+output:
+[[6,8,7,6,10], 
+ [8,9,6,10,9], 
+ [6,7,3,2,6], 
+ [8,9,8,9,3], 
+ [2,9,2,7,7]]
+"""
+def rotateImage(a):
+    return [i[::-1] for i in list(zip(*a))]
+###################################################################################################
+"""
+Write a function that takes a string as input and returns the string with only the vowels reversed. (aeior and not y)
+input: "hello, world"
+output: "hollo, werld"
+"""
+def reverseVowelsOfString(s):
+    s_list = list(s)
+    vowels = list(re.finditer(r'[aeiou]', s, re.I))
+    values = [i.group() for i in vowels]
+    for i in vowels:
+        pos = i.start()
+        s_list[pos] = values.pop()
+    return ''.join(s_list)
+###################################################################################################
+"""
+Reverse the order of words in a given string sentence. You can assume that sentence does not have any 
+leading, trailing or repeating spaces.
+input: "Man bites dog"
+output: "dog bites Man"
+"""
+def reverseSentence(sentence):
+    return ' '.join(sentence.split()[::-1])
 ###################################################################################################
 
-###################################################################################################
 
-###################################################################################################
 
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
-
-###################################################################################################
 
 
