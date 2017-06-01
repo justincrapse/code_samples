@@ -797,8 +797,106 @@ output: "dog bites Man"
 def reverseSentence(sentence):
     return ' '.join(sentence.split()[::-1])
 ###################################################################################################
+"""
+Given a string s, recursively remove any adjacent duplicate characters that it contains.
+input: "acaaabbbacdddd"
+output: "acac"
+"""
+def removeDuplicateAdjacent(s):
+    is_duplicate = re.search(r'(\w)\1+', s)
+    if not is_duplicate:
+        return s
+    return removeDuplicateAdjacent(re.sub(r'(\w)\1+', '', s))
+###################################################################################################
+"""
+Note: Avoid using built-in functions that convert integers to their binary representations. Write the solution
+that uses O(k) operations per test, where k is the number of bits set to 1. Write a function that takes an unsigned
+(positive) integer and returns the number of 1 bits its binary representation contains. This value is also known as 
+the integer's Hamming weight.
+input: 84618
+output: 7
+"""
+def numberOf1Bits(n):
+    bits = 0
+    while n != 0:
+        if n % 2 == 0:
+            n = n >> 1
+        else:
+            n = n >> 1
+            bits += 1
+    return bits
+###################################################################################################
+"""
+Given two strings, s and t, find the length of their longest common substring.
+input: s: "zxabcdezy" t: "yzabcdezx"
+output: 6
+"""
+from difflib import SequenceMatcher
 
+def longestCommonSubstring(s, t):
+    return SequenceMatcher(None, s, t).find_longest_match(0, len(s), 0, len(t)).size
+###################################################################################################
+"""
+Determine whether the given number n is a power of two.
+input: 17179869184
+output: True
+"""
+def isPowerOfTwo2(n):
+    return bin(n).count('1') == 1
+###################################################################################################
+"""
+A cryptarithm is a mathematical puzzle for which the goal is to find the correspondence between letters and digits, 
+such that the given arithmetic equation consisting of letters holds true when the letters are converted to digits.
+You have an array of strings crypt, the cryptarithm, and an an array containing the mapping of letters and digits, 
+solution. The array crypt will contain three non-empty strings that follow the structure: [word1, word2, word3], 
+which should be interpreted as the word1 + word2 = word3 cryptarithm. If crypt, when it is decoded by replacing all
+of the letters in the cryptarithm with digits using the mapping in solution, becomes a valid arithmetic equation 
+containing no numbers with leading zeroes, the answer is true. If it does not become a valid arithmetic solution, 
+the answer is false.
+imput: crypt: ["SEND", "MORE", "MONEY"] 
+solution: [["O","0"], ["M","1"], ["Y","2"], ["E","5"], ["N","6"], ["D","7"], ["R","8"], ["S","9"]]
+output: True
+"""
+def isCryptSolution(crypt, solution):
+    c_dict = {i[0]:i[1] for i in solution}
+    n1 = ''.join([c_dict[i] for i in crypt[0]])
+    if re.match('[0][^.]', n1):
+        return False
+    n2 = ''.join([c_dict[i] for i in crypt[1]])
+    if re.match('[0][^.]', n2):
+        return False
+    n3 = ''.join([c_dict[i] for i in crypt[2]])
+    if re.match('[0][^.]', n3):
+        return False
+    return int(n1) + int(n2) == int(n3)
 
-
-
-
+###################################################################################################
+"""
+You have two version strings composed of several non-negative decimal fields that are separated by periods ("."). 
+Both strings contain an equal number of numeric fields. Return 1 if the first version is higher than the second
+version, -1 if it is smaller, and 0 if the two versions are the same. The syntax follows the regular semver 
+(semantic versioning) ordering rules:
+1.0.5 < 1.1.0 < 1.1.5 < 1.1.10 < 1.2.0 < 1.2.2
+< 1.2.10 < 1.10.2 < 2.0.0 < 10.0.0
+input: ver1: "1.0.1" ver2: "1.01.0"
+output: -1
+"""
+def higherVersion2(ver1, ver2):
+    v1_list = [int(i) for i in ver1.split('.')]
+    v2_list = [int(i) for i in ver2.split('.')]
+    if v1_list == v2_list:
+        return 0
+    elif v1_list > v2_list:
+        return 1
+    else:
+        return -1
+###################################################################################################
+"""
+Let's define a group of anagrams as a list of words, where for each pair of words w1 and w2, w1 is an anagram of w2.
+Given a list of words, split it into the smallest possible number of groups of anagrams and return this number as the answer.
+input: ["tea", "eat", "apple", "ate", "vaja", "cut", "java", "utc"]
+output: 4
+"""
+def groupsOfAnagrams(words):
+    return len(set([tuple(sorted(i)) for i in words]))
+###################################################################################################
