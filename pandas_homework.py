@@ -48,7 +48,7 @@ df['Gold'].idxmax()  # returns the index value of the highest value found in the
 Question 2
 Which country had the biggest difference between their summer and winter gold medal counts?
 """
-abs(df['Gold'] - df['Gold.1']).idxmax()
+(df['Gold'] - df['Gold.1']).abs().idxmax()
 """
 Not sure if this is the best way to do it, but it worked. I believe it works because you can do operations on the Series
 in a dataframe and it will return the new data in a dataframe matched with the index intact. Then just call idxmax() to get
@@ -61,7 +61,7 @@ Which country has the biggest difference between their summer gold medal counts 
 relative to their total gold medal count? Summer Gold − Winter Gold / Total Gold. Only include countries that 
 have won at least 1 gold in both summer and winter.
 """
-abs((df['Gold'] - df['Gold.1'])/df['Gold.2'])[(df['Gold'] > 0) & (df['Gold.1'] > 0)].idxmax()
+((df['Gold'] - df['Gold.1'])/df['Gold.2']).abs()[(df['Gold'] > 0) & (df['Gold.1'] > 0)].idxmax()
 """
 First is the calulation we were asked to do. Then we filter out 'Gold' and 'Gold.1' values that are not greater 
 than 0 as required. Lastly, we get the max as we have done before.
@@ -73,7 +73,8 @@ Write a function that creates a Series called "Points" which is a weighted value
 counts for 3 points, silver medals (Silver.2) for 2 points, and bronze medals (Bronze.2) for 1 point. The function
 should return only the column (a Series object) which you created.
 """
-return df['Gold.2'] * 3 + df['Silver.2'] * 2 + df['Bronze']  # simply multiply the medals by the points they are worth
+s = df['Gold.2'] * 3 + df['Silver.2'] * 2 + df['Bronze']
+s.name = 'Points'
 ###################################################################################################
 
 
@@ -98,7 +99,25 @@ Question 6
 Only looking at the three most populous counties for each state, what are the three most populous states
 (in order of highest population to lowest population)? Use CENSUS2010POP.
 """
-df[df['SUMLEV'] == 50].groupby('STNAME')['CENSUS2010POP'].apply(lambda x: x.nlargest(3).sum()).nlargest(3).index.values
+dfg = census_df[census_df['SUMLEV'] == 50].groupby('STNAME')['CENSUS2010POP']
+dfg.apply(lambda x: x.nlargest(3).sum()).nlargest(3).index.values.tolist()
 """
 I had this figured out except for the apply function, which I had not know about yet and found this part of the solution on the internet.  
-I think the apply() and nlargest() functions are self explanatory. Verry useful. 
+I think the apply() and nlargest() functions are self explanatory. Verry useful.
+"""
+###################################################################################################
+"""
+Question 7
+Which county has had the largest absolute change in population within the period 2010-2015? (Hint: population values are stored in columns POPESTIMATE2010 through POPESTIMATE2015, you need to consider all six columns.)
+e.g. If County Population in the 5 year period is 100, 120, 80, 105, 100, 130, then its largest change in the period would be |130-80| = 50.
+"""
+cdf = census_df[census_df['SUMLEV'] == 50].set_index('CTYNAME').loc[:, 'POPESTIMATE2010': 'POPESTIMATE2015']
+(cdf.max(axis=1) - cdf.min(axis=1)).idxmax()
+###################################################################################################
+"""
+Question 8
+In this datafile, the United States is broken up into four regions using the "REGION" column.
+Create a query that finds the counties that belong to regions 1 or 2, whose name starts with 'Washington', and whose POPESTIMATE2015 was greater than their POPESTIMATE 2014.
+"""
+dff =  df[((df['REGION'] == 1) | (df['REGION'] == 2)) & (df['POPESTIMATE2015'] > df['POPESTIMATE2014'])]
+dff[dff['CTYNAME'].str.startswith('Washington')][['STNAME', 'CTYNAME']]
