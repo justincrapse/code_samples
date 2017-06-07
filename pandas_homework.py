@@ -101,10 +101,6 @@ Only looking at the three most populous counties for each state, what are the th
 """
 dfg = census_df[census_df['SUMLEV'] == 50].groupby('STNAME')['CENSUS2010POP']
 dfg.apply(lambda x: x.nlargest(3).sum()).nlargest(3).index.values.tolist()
-"""
-I had this figured out except for the apply function, which I had not know about yet and found this part of the solution on the internet.  
-I think the apply() and nlargest() functions are self explanatory. Verry useful.
-"""
 ###################################################################################################
 """
 Question 7
