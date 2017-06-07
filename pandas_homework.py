@@ -34,7 +34,7 @@ df.head()
 """
 first we read in the csv, ignoring the first row and using the first column as the index column, which is the country in this case
 Next, the code loops through some matched columns and changes them; "inplace=True" means we are altering the original dataframe in-line
-Names are set, which have not been covered yet. The column 'Totals' is dropped. 
+Names are set. The column 'Totals' is dropped. 
 """
 
 ###################################################################################################
